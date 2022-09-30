@@ -8,8 +8,8 @@ const app = express()
 
 db.connect()
 
-// server post
-app.use(express.urlencoded({ extended: true }))
+// habilitar o recebimento de dados json
+app.use(express.json())
 
 // rotas
 app.use('/api', routes)
