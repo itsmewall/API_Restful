@@ -31,7 +31,32 @@ const product = new productsModel({
     })
 }
 
+async function put(req, res){
+    const { id } = req.params
+
+
+    // RETORNA UM PRODUTO ATUALIZADO 
+    const product = await productsModel.findOneAndUpdate({ _id: id}, req.body, { new: true})
+     
+    res.send({
+        message: 'Success',
+        product,
+    })
+
+    /* METODO QUE EDITA MAS NAO ATUALIZA
+    
+    const product = await productsModel.findOne({ _id: id})
+
+    await product.updateOne(req.body)
+
+    res.send({
+        message: 'success',
+        product,
+    }) */
+}
+
 module.exports = {
     get,
     post,
+    put,
 }
