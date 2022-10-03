@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 
+        ARQUIVO CONTENDO HTML DOS FOMULÁRIOS, SCRIPT DO JAVASCRIPT E CSS PARA ESTILIZAÇÃO
+
+        CSS E DESIGN NÃO LEVADOS EM CONTA NESTE PROJETO! 
+        
+        A INTENÇÃO DESTE ARQUIVO É O CONSUMO DA API!
+     -->
+
+
+    <style>
+        .hidden {
+            display: none;
+        }
+        .h1 {
+            display: flex;
+            justify-content: center;
+        }
+        .h2 {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .form {
+            width: 700px;
+            margin-right: auto;
+            margin-left: auto;
+            display: block;
+            justify-content: center;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .form .div {
+            display: flexbox;
+            margin: 15px;
+        }
+        
+        .form .div input {
+            display: flex;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .form .button {
+            margin-left: 75px;
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: blueviolet;
+        }
+        
+        .hidden .h2 {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .hidden .form {
+            width: 700px;
+            margin-right: auto;
+            margin-left: auto;
+            display: block;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .li {
+            margin: 10px;
+            justify-content: center;
+            display: flex;
+            
+        
+        }
+    </style>
+</head>
+<body>
+    <h1 class="h1">Listagem de Produtos</h1>
+
+    <ul id="products-list"></ul>
+
+    <hr>
+
+    <h2 class="h2">Cadastro de Produtos</h2>
+    <form id="form" class="form">
+        <div class="div">
+            <label>Nome</label>
+            <input type="text" name="name">
+        </div>
+        <div class="div">
+            <label>Marca</label>
+            <input type="text" name="brand">
+        </div>
+        <div class="div">
+            <label>Preço</label>
+            <input type="text" name="price">
+        </div>
+        <div>
+            <button class="button" type="submit">Cadastrar</button>
+        </div>
+    </form>
+
+    <div id="edit" class="hidden">
+        <hr>
+        <h2 class="h2">Alterar Produto</h2>
+        <form id="formEdit" class="form">
+            <input type="hidden" name="id">
+            <div class="div">
+                <label>Nome</label>
+                <input type="text" name="name">
+            </div>
+            <div class="div">
+                <label>Marca</label>
+                <input type="text" name="brand">
+            </div>
+            <div class="div">
+                <label>Preço</label>
+                <input type="text" name="price">
+            </div>
+            <div>
+                <button type="submit" class="button">Alterar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        const API_URL = 'http://localhost:8080/api/products'
+        
+        const form = document.querySelector('#form')
+        const edit = document.querySelector('#edit')
+        const formEdit = document.querySelector('#formEdit')
+        const productsList = document.querySelector('#products-list')
+
+
+        // ADICIONA EVENTO DE CLICK NO BOTÃO EDITAR
+        function adicionaEventoBotaoEditar() {
+            const botoesEditar = document.querySelectorAll('.botao-editar')
+            botoesEditar.forEach(botao => {
+                botao.onclick = function(e) {
+                    e.preventDefault()
+
+                    edit.classList.remove('hidden')
+
+                    const id = this.dataset.id 
+                    const name = this.dataset.name 
+                    const brand = this.dataset.brand 
+                    const price = this.dataset.price
+                    
+                    document.forms['formEdit'].id.value = id
+                    document.forms['formEdit'].name.value = name
+                    document.forms['formEdit'].brand.value = brand
+                    document.forms['formEdit'].price.value = price
+                }
+            })
+
+        }
+
+        // OBTEM A LISTA DE PRODUTOS
+        function obterLista() {
+            fetch(API_URL).then(response => {
+            response.json().then(data => {
+
+                const productsHtml = data.map(product => `
+                <li class="li">
+                    ${product.name} - ${product.brand} - ${product.price}
+                <a href="#" class="botao-editar" data-id="${product._id}"
+                data-id="${product._id}" 
+                data-name="${product.name}" 
+                data-brand="${product.brand}" 
+                data-price="${product.price}"
+                >
+                    [editar]
+                </a>
+                <a 
+                href="#" 
+                class="botao-excluir"
+                data-id="${product._id}" 
+                >
+                    [excluir]
+                </a>
+                </li>`
+                ).join('')
+        
+                productsList.innerHTML = productsHtml
+
+                adicionaEventoBotaoExcluir()
+                adicionaEventoBotaoEditar()
+                })
+            })
+        }
+
+        
+
+        // ADICIONA EVENTO DE CLICK NO BOTAO EXCLUIR 
+        function adicionaEventoBotaoExcluir() {
+            const botoesExcluir = document.querySelectorAll('.botao-excluir')
+            botoesExcluir.forEach(botao => {
+                botao.onclick = function(e) {
+                    e.preventDefault()
+
+                    const id = this.dataset.id
+
+                    fetch(`${API_URL}/${id}`, {
+                        method: 'DELETE',
+                    }).then(response => {
+                        response.json().then(data => {
+                            if (data.message === 'success') {
+                                obterLista()
+                                alert('Produto excluido com sucesso!')
+                            } else {
+                                alert('ops, ocorreu um erro!')
+                            }
+                        })
+                    })
+                }
+            })
+        }
+
+        obterLista()
+    
+        // AO CADASTRAR UM PRODUTO
+        form.onsubmit = function(e) {
+            e.preventDefault()
+
+            const name = document.forms['form'].name.value
+            const brand = document.forms['form'].brand.value
+            const price = document.forms['form'].price.value
+
+            fetch(API_URL, {
+                method: 'POST',
+                //metodo obrigatorio para JSON:
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name, 
+                    brand,
+                    price,
+                })
+            }).then(response => {
+                response.json().then(data => {
+                    if (data.message === 'success') {
+                        form.reset()
+                        obterLista()
+                        alert('Cadastro realizado com sucesso!')
+                    } else {
+                        alert('Ops, ocorreu um erro! Tente novamente.')
+                    }
+                })
+            })
+        }
+    
+        // AO EDITAR UM PRODUTO
+        formEdit.onsubmit = function(e) {
+            e.preventDefault()
+
+            const id = document.forms['formEdit'].id.value
+            const name = document.forms['formEdit'].name.value
+            const brand = document.forms['formEdit'].brand.value
+            const price = document.forms['formEdit'].price.value
+
+            fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    brand,
+                    price,
+                    })
+                }).then(response => {
+                    response.json().then(data => {
+                        if (data.message === 'success') {
+                            alert('ops, ocorreu um erro!')
+                            formEdit.reset()
+                            edit.classList.add('hidden')
+                            obterLista()
+                        } else {
+                            alert('Produto alterado com sucesso!')
+                            formEdit.reset()
+                            edit.classList.add('hidden')
+                            obterLista()
+                        }
+                    })
+                })
+            }
+
+    </script>
+     
+</body>
+</html>
