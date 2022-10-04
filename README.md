@@ -1,11 +1,7 @@
-API RESTFUL DE CADASTRO DE PRODUTOS
-.
-.
-.
-CONSUMO DE DADOS
-.
-.
-.
+- API RESTFUL DE CADASTRO DE PRODUTOS
+
+- CONSUMO DE DADOS
+
 
         INTENÇÃO DO PROJETO
 Este projeto conta com o consumo de uma API restful em JavaScript utilizando os métodos de GET, POST, DELETE e PUT.
@@ -18,13 +14,10 @@ JavaScript, MongoDB como banco de dados, GIT Bash como terminal, postman, Node.J
 
 
         MÓDULOS
-$ npm init -y 
-$ npm i express mongoose 
-$ npm i --save-dev
-rodar server: $ npm run dev
+- $ npm init -y 
+- $ npm i express mongoose 
+- $ npm i --save-dev
+- rodar server: $ npm run dev
 
-.
-.
-.
-.
-    Este projeto não leva em conta o design e estilização de páginas. O intuito do mesmo é o consumo da API.
+
+- Este projeto não leva em conta o design e estilização de páginas. O intuito do mesmo é o consumo da API.
